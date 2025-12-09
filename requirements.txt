@@ -1,0 +1,7 @@
+langchain_core==1.1.2
+langchain_groq==1.1.0
+langchain_tavily==0.2.13
+langgraph==1.0.4
+pycoingecko==3.2.0
+python-dotenv==1.2.1
+streamlit==1.50.0
