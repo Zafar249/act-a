@@ -4,18 +4,22 @@ from langchain_core.tools import Tool
 from langgraph.prebuilt import create_react_agent
 from pycoingecko import CoinGeckoAPI
 from dotenv import load_dotenv
+from prompt import system_prompt
+from helper_functions import *
 import os
 
 # Load the environment variables
 load_dotenv()
 
-def get_coin_price(query : str):
+def get_coin_indicators(query : str):
     """
-    Retrieves the current price of a cryptocurrency in USD. 
-    This tool can handle both full coin names (e.g., 'bitcoin') and ticker symbols (e.g., 'BTC', 'ETH').
+    Analyzes a cryptocurrency's current price and technical indicators (RSI, MACD, EMA).
     
     Args:
-        query (str): The name or symbol of the coin to look up.
+        query (str): The full name (e.g., 'bitcoin') or ticker symbol (e.g., 'BTC').
+    
+    Returns:
+        str: A summary of the price and technical analysis.
     """
 
     # Initialize the api
@@ -27,24 +31,41 @@ def get_coin_price(query : str):
         # Get the price of the coin if query is a valid symbol
         price = cg.get_price(ids=query, vs_currencies="usd")
 
-        return price[query]["usd"]
     except:
-        pass
+        try:
+            # Get the symbol of the coin if query is the name
+            query = cg.get_coins_markets(
+                symbols=query,
+                vs_currency="usd"
+            )[0]["id"]
 
-    try:
-        # Get the symbol of the coin if query is the name
-        query = cg.get_coins_markets(
-            symbols=query,
-            vs_currency="usd"
-        )[0]["id"]
+            # Get the price of the coin if query is a valid symbol
+            price = cg.get_price(ids=query, vs_currencies="usd")
 
-        # Get the price of the coin if query is a valid symbol
-        price = cg.get_price(ids=query, vs_currencies="usd")
+        except:
+            pass
 
-        return price[query]["usd"]
+    finally:
+
+        # Get market data about the coin over the past n days
+        market_list = cg.get_coin_ohlc_by_id(id=query, vs_currency="usd", days=30)
+
+        latest = get_coin_data(market_list)
+
+        # Determine Trend based on EMA
+        trend = "Bullish" if latest["Close"] > latest["EMA_50"] else "Bearish"
         
-    except:
-        print("An error occured")
+        # Determine Momentum based on MACD Histogram
+        momentum = "Positive" if latest["MACDh_12_26_9"] > 0 else "Negative"
+
+        summary = (
+            f"Analysis for {query.capitalize()}:\n"
+            f"- Current Price: ${latest['Close']:.2f}\n"
+            f"- Trend (vs EMA 50): {trend}\n"
+            f"- RSI (6): {latest['RSI_6']:.2f} (Over 70=Overbought, Under 30=Oversold)\n"
+            f"- MACD Momentum: {momentum} (Histogram: {latest['MACDh_12_26_9']:.2f})"
+        )
+        return summary
 
 
 def create_agent():
@@ -59,26 +80,17 @@ def create_agent():
     )
 
     coin_tool = Tool(
-        name="get_coin_price",
-        func=get_coin_price,
-        description = "Useful for finding the current price of any crypto. Accepts both full names (Bitcoin) and symbols (BTC)."
+        name="get_coin_indicators",
+        func=get_coin_indicators,
+        description = "Useful for getting the current price, RSI, MACD, and trend analysis of a cryptocurrency. Accepts names (Bitcoin) or symbols (BTC)."
     )
     # Create an AI agent by merging the llm with the tool
-    agent = create_react_agent(llm, [search_tool, coin_tool])
+    agent = create_react_agent(llm, [search_tool, coin_tool], prompt=system_prompt)
 
     return agent
 
 
-def get_agent_response(agent, user_input):
-    # Make a call to the agent and return the response
-    resp = agent.invoke({"messages": user_input})
-
-    try:
-        return resp["messages"][3].content
-    except:
-        return resp["messages"][1].content
-
 if __name__ == "__main__":
     agent = create_agent()
-    print(get_agent_response(agent, "What is the current price of DOGE?"))
+    print(get_agent_response(agent, "Get me the current price of ethereum and the news about it."))
 
