@@ -45,33 +45,31 @@ def get_coin_indicators(query : str):
         except:
             pass
 
-    finally:
+    # Get market data about the coin over the past n days
+    market_list = cg.get_coin_ohlc_by_id(id=query, vs_currency="usd", days=30)
 
-        # Get market data about the coin over the past n days
-        market_list = cg.get_coin_ohlc_by_id(id=query, vs_currency="usd", days=30)
+    latest = get_coin_data(market_list)
 
-        latest = get_coin_data(market_list)
+    # Determine Trend based on EMA
+    trend = "Bullish" if latest["Close"] > latest["EMA_50"] else "Bearish"
+    
+    # Determine Momentum based on MACD Histogram
+    momentum = "Positive" if latest["MACDh_12_26_9"] > 0 else "Negative"
 
-        # Determine Trend based on EMA
-        trend = "Bullish" if latest["Close"] > latest["EMA_50"] else "Bearish"
-        
-        # Determine Momentum based on MACD Histogram
-        momentum = "Positive" if latest["MACDh_12_26_9"] > 0 else "Negative"
-
-        summary = (
-            f"Analysis for {query.capitalize()}:\n"
-            f"- Current Price: ${latest['Close']:.2f}\n"
-            f"- Trend (vs EMA 50): {trend}\n"
-            f"- RSI (6): {latest['RSI_6']:.2f} (Over 70=Overbought, Under 30=Oversold)\n"
-            f"- MACD Momentum: {momentum} (Histogram: {latest['MACDh_12_26_9']:.2f})"
-        )
-        return summary
+    summary = (
+        f"Analysis for {query.capitalize()}:\n"
+        f"- Current Price: ${latest['Close']:.2f}\n"
+        f"- Trend (vs EMA 50): {trend}\n"
+        f"- RSI (6): {latest['RSI_6']:.2f} (Over 70=Overbought, Under 30=Oversold)\n"
+        f"- MACD Momentum: {momentum} (Histogram: {latest['MACDh_12_26_9']:.2f})"
+    )
+    return summary
 
 
 def create_agent():
 
     # Create an LLM model using Groq and Gpt open source
-    llm = ChatGroq(groq_api_key=os.getenv("GROQ_API_KEY"), model="openai/gpt-oss-20b")
+    llm = ChatGroq(groq_api_key=os.getenv("GROQ_API_KEY"), model="openai/gpt-oss-120b")
 
     # Create a tool object using Tavily Search
     search_tool = TavilySearch(
@@ -93,4 +91,5 @@ def create_agent():
 if __name__ == "__main__":
     agent = create_agent()
     print(get_agent_response(agent, "Get me the current price of ethereum and the news about it."))
+
 
