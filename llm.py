@@ -23,27 +23,20 @@ def get_coin_indicators(query : str):
     """
 
     # Initialize the api
-    # demo_api_key=os.getenv("COINGECKO_API_KEY")
-    cg = CoinGeckoAPI()
+    demo_api_key=os.getenv("COINGECKO_API_KEY")
+    cg = CoinGeckoAPI(demo_api_key=demo_api_key)
     query = query.lower().strip()
 
-    try:
-        # Get the price of the coin if query is a valid symbol
-        price = cg.get_price(ids=query, vs_currencies="usd")
+    # Get the price of the coin if query is a valid name
+    price = cg.get_price(ids=query, vs_currencies="usd")
 
-    except:
-        try:
-            # Get the symbol of the coin if query is the name
-            query = cg.get_coins_markets(
-                symbols=query,
-                vs_currency="usd"
-            )[0]["id"]
-
-            # Get the price of the coin if query is a valid symbol
-            price = cg.get_price(ids=query, vs_currencies="usd")
-
-        except:
-            pass
+    # If price is empty
+    if not price:
+        # Get the name of the coin if query is a symbol
+        query = cg.get_coins_markets(
+            symbols=query,
+            vs_currency="usd"
+        )[0]["id"]
 
     # Get market data about the coin over the past n days
     market_list = cg.get_coin_ohlc_by_id(id=query, vs_currency="usd", days=30)
@@ -91,5 +84,6 @@ def create_agent():
 if __name__ == "__main__":
     agent = create_agent()
     print(get_agent_response(agent, "Get me the current price of ethereum and the news about it."))
+
 
 
