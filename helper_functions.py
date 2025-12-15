@@ -5,18 +5,8 @@ def get_agent_response(agent, user_input):
     # Make a call to the agent and return the response
     resp = agent.invoke({"messages": user_input})
 
-    try:
-        # If both tools are called
-        return resp["messages"][5].content
-    
-    except:
-        try:
-            # If only 1 tool is called
-            return resp["messages"][3].content
-        
-        except:
-            # If no tool is called
-            return resp["messages"][1].content
+    # Return the response based on the number of tools used
+    return resp["messages"][-1].content
         
 
 def get_coin_data(market_list):
@@ -35,5 +25,6 @@ def get_coin_data(market_list):
     # Calculate MACD of the coin
     macd_data = coin_data.ta.macd(close="Close", fast=12, slow=26, signal=9)
     coin_data = pd.concat([coin_data, macd_data], axis=1)
+
 
     return coin_data.iloc[-1]
