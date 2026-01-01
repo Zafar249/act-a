@@ -44,7 +44,7 @@ def get_coin_name(query : str):
             vs_currency="usd"
         )[0]["id"]
 
-    coin = cg.get_coin_by_id("query")
+    coin = cg.get_coin_by_id(query)
     symbol = coin["symbol"].upper()
     return query, symbol
 
@@ -135,4 +135,5 @@ def get_coin_summary(market_list, query):
     )
 
     return summary
+
 
