@@ -83,7 +83,7 @@ def get_coin_ohlc(symbol : str):
     # Returns the ohlc history of a coin based on the coin name
 
     # Define the request url
-    key = "https://api.binance.com/api/v3/klines?symbol="+symbol+"USDT&interval=15m&limit=225"
+    key = "https://api.binance.com/api/v3/klines?symbol="+symbol+"USDT&interval=1h&limit=225"
 
     # Requesting data from the url
     data = requests.get(key)
@@ -135,3 +135,4 @@ def get_coin_summary(market_list, query):
     )
 
     return summary
+
