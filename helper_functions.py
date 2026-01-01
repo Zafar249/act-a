@@ -115,3 +115,23 @@ def get_coin_data(market_list):
 
 
     return coin_data.iloc[-1]
+
+
+def get_coin_summary(market_list, query):
+    latest = get_coin_data(market_list)
+
+    # Determine Trend based on EMA
+    trend = "Bullish" if latest["Close"] > latest["EMA_50"] else "Bearish"
+    
+    # Determine Momentum based on MACD Histogram
+    momentum = "Positive" if latest["MACDh_12_26_9"] > 0 else "Negative"
+
+    summary = (
+        f"Analysis for {query.capitalize()}:\n"
+        f"- Current Price: ${latest['Close']:.2f}\n"
+        f"- Trend (vs EMA 50): {trend}\n"
+        f"- RSI (6): {latest['RSI_6']:.2f} (Over 70=Overbought, Under 30=Oversold)\n"
+        f"- MACD Momentum: {momentum} (Histogram: {latest['MACDh_12_26_9']:.2f})"
+    )
+
+    return summary
