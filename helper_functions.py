@@ -5,10 +5,11 @@ import requests
 import json
 from pydantic import BaseModel, Field
 from langchain_core.tools import tool
+import os
 
 # Initialize the api
-# demo_api_key=os.getenv("COINGECKO_API_KEY")
-cg = CoinGeckoAPI()
+demo_api_key=os.getenv("COINGECKO_API_KEY")
+cg = CoinGeckoAPI(demo_api_key=demo_api_key)
 
 def get_agent_response(agent, user_input):
     # Make a call to the agent and return the response
@@ -144,4 +145,5 @@ def get_coin_summary(market_list, query):
     )
 
     return summary
+
 
