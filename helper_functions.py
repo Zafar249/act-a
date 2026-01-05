@@ -76,8 +76,11 @@ def get_coin_indicators(query : str):
     # Get the name of the coin
     query, symbol = get_coin_name(query)
 
+    # # Get market data about the coin over the past n days
+    # market_list = get_coin_ohlc(symbol)
+
     # Get market data about the coin over the past n days
-    market_list = get_coin_ohlc(symbol)
+    market_list = cg.get_coin_ohlc_by_id(id=query, vs_currency="usd", days=30)
 
     # Get the summary of the coin
     summary = get_coin_summary(market_list, query)
@@ -141,3 +144,4 @@ def get_coin_summary(market_list, query):
     )
 
     return summary
+
