@@ -89,22 +89,22 @@ def get_coin_indicators(query : str):
     return summary
 
 
-def get_coin_ohlc(symbol : str):
-    # Returns the ohlc history of a coin based on the coin name
+# def get_coin_ohlc(symbol : str):
+#     # Returns the ohlc history of a coin based on the coin name
 
-    # Define the request url
-    key = "https://api.binance.us/api/v3/klines?symbol="+symbol+"USDT&interval=1h&limit=225"
+#     # Define the request url
+#     key = "https://api.binance.us/api/v3/klines?symbol="+symbol+"USDT&interval=1h&limit=225"
 
-    # Requesting data from the url
-    data = requests.get(key)
-    data = data.json()
+#     # Requesting data from the url
+#     data = requests.get(key)
+#     data = data.json()
 
-    market_data = []
-    for candle in data:
-        # Add the useful columns of candle data to market data
-        market_data.append(candle[:5])
+#     market_data = []
+#     for candle in data:
+#         # Add the useful columns of candle data to market data
+#         market_data.append(candle[:5])
 
-    return market_data
+#     return market_data
 
 def get_coin_data(market_list):
 
@@ -145,5 +145,6 @@ def get_coin_summary(market_list, query):
     )
 
     return summary
+
 
 
