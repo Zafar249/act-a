@@ -3,6 +3,8 @@ import pandas_ta_classic as ta
 from pycoingecko import CoinGeckoAPI
 import requests
 import json
+from pydantic import BaseModel, Field
+from langchain_core.tools import tool
 
 # Initialize the api
 # demo_api_key=os.getenv("COINGECKO_API_KEY")
@@ -49,6 +51,10 @@ def get_coin_name(query : str):
     return query, symbol
 
 
+class GetCoinIndicators(BaseModel):
+    query : str = Field(description="query (str): The valid API ID of the coin (e.g., 'bitcoin').")
+
+@tool(args_schema=GetCoinIndicators)
 def get_coin_indicators(query : str):
     """
     Orchestrates the retrieval and analysis of technical market data.
@@ -83,7 +89,7 @@ def get_coin_ohlc(symbol : str):
     # Returns the ohlc history of a coin based on the coin name
 
     # Define the request url
-    key = "https://api.binance.com/api/v3/klines?symbol="+symbol+"USDT&interval=1h&limit=225"
+    key = "https://api.binance.us/api/v3/klines?symbol="+symbol+"USDT&interval=1h&limit=225"
 
     # Requesting data from the url
     data = requests.get(key)
@@ -99,7 +105,7 @@ def get_coin_ohlc(symbol : str):
 def get_coin_data(market_list):
 
     # Convert the market list to a dataframe
-    coin_data = pd.DataFrame(market_list, columns=["Time","Open","High","Low","Close"], dtype=pd.Float64Dtype)
+    coin_data = pd.DataFrame(market_list, columns=["Time","Open","High","Low","Close"])
 
     # Calculate EMA of the coin
     coin_data["EMA_50"] = coin_data.ta.ema(close="Close", length=50)
@@ -135,5 +141,3 @@ def get_coin_summary(market_list, query):
     )
 
     return summary
-
-
