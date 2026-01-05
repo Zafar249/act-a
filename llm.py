@@ -20,14 +20,9 @@ def create_agent():
         max_results = 3,
         topic = "general"
     )
-
-    coin_tool = Tool(
-        name="get_coin_indicators",
-        func=get_coin_indicators,
-        description = "Useful for getting the current price, RSI, MACD, and trend analysis of a cryptocurrency. Accepts names (Bitcoin) or symbols (BTC)."
-    )
+    
     # Create an AI agent by merging the llm with the tool
-    agent = create_react_agent(llm, [search_tool, coin_tool], prompt=system_prompt)
+    agent = create_react_agent(llm, [search_tool, get_coin_indicators], prompt=system_prompt)
 
     return agent
 
@@ -35,6 +30,7 @@ def create_agent():
 if __name__ == "__main__":
     agent = create_agent()
     print(get_agent_response(agent, "Should I buy ethereum?"))
+
 
 
 
