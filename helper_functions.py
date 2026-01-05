@@ -3,9 +3,6 @@ import pandas_ta_classic as ta
 from pycoingecko import CoinGeckoAPI
 import requests
 import json
-from pydantic import BaseModel, Field
-from langchain_core.tools import tool
-import os
 
 # Initialize the api
 # demo_api_key=os.getenv("COINGECKO_API_KEY")
@@ -52,10 +49,6 @@ def get_coin_name(query : str):
     return query, symbol
 
 
-class GetCoinIndicators(BaseModel):
-    query : str = Field(description="query (str): The valid API ID of the coin (e.g., 'bitcoin').")
-
-@tool(args_schema=GetCoinIndicators)
 def get_coin_indicators(query : str):
     """
     Orchestrates the retrieval and analysis of technical market data.
@@ -145,6 +138,7 @@ def get_coin_summary(market_list, query):
     )
 
     return summary
+
 
 
 
