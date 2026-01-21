@@ -109,6 +109,10 @@ def get_coin_data(market_list):
     # Convert the market list to a dataframe
     coin_data = pd.DataFrame(market_list, columns=["Time","Open","High","Low","Close"])
 
+    # Convert price columns to float
+    num_col = ["Open","High","Low","Close"]
+    coin_data[num_col] = coin_data[num_col].apply(pd.to_numeric)
+    
     # Calculate EMA of the coin
     coin_data["EMA_50"] = coin_data.ta.ema(close="Close", length=50)
     coin_data["EMA_100"] = coin_data.ta.ema(close="Close", length=100)
@@ -143,6 +147,7 @@ def get_coin_summary(market_list, query):
     )
 
     return summary
+
 
 
 
