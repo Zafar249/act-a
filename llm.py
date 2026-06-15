@@ -10,7 +10,7 @@ import os
 # Load the environment variables
 load_dotenv()
 
-def create_agent():
+def create_ai_agent():
 
     # Create an LLM model using Groq and Gpt open source
     llm = ChatGroq(groq_api_key=os.getenv("GROQ_API_KEY"), model="openai/gpt-oss-120b")
@@ -28,13 +28,13 @@ def create_agent():
     )
     
     # Create an AI agent by merging the llm with the tool
-    agent = create_agent(llm, [search_tool, coin_tool], prompt=system_prompt)
+    agent = create_agent(llm, [search_tool, coin_tool], system_prompt=system_prompt)
 
     return agent
 
 
 if __name__ == "__main__":
-    agent = create_agent()
+    agent = create_ai_agent()
     print(get_agent_response(agent, "Should I buy ethereum?"))
 
 
