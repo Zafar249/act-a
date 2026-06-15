@@ -1,7 +1,7 @@
 from langchain_groq import ChatGroq
 from langchain_tavily import TavilySearch
 from langchain_core.tools import Tool
-from langgraph.prebuilt import create_react_agent
+from langchain.agents import create_agent
 from dotenv import load_dotenv
 from prompt import system_prompt
 from helper_functions import *
@@ -28,7 +28,7 @@ def create_agent():
     )
     
     # Create an AI agent by merging the llm with the tool
-    agent = create_react_agent(llm, [search_tool, coin_tool], prompt=system_prompt)
+    agent = create_agent(llm, [search_tool, coin_tool], prompt=system_prompt)
 
     return agent
 
