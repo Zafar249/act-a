@@ -12,7 +12,7 @@ user_input = st.text_input("Enter your query: ")
 
 if user_input:
     # Create the react agent
-    agent = create_agent()
+    agent = create_ai_agent()
 
     # Get the response of the agent and write it to the page.
     response = get_agent_response(agent, user_input)
