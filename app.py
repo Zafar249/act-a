@@ -1,5 +1,5 @@
 import streamlit as st
-from llm import create_agent, get_agent_response
+from llm import create_ai_agent, get_agent_response
 
 # Set the configurations of the page
 st.set_page_config(page_title="Act-A")
